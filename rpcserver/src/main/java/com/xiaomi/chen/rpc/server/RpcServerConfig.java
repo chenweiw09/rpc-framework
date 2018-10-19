@@ -3,7 +3,8 @@ package com.xiaomi.chen.rpc.server;
 import com.xiaomi.chen.rpc.common.annotation.RpcService;
 import com.xiaomi.chen.rpc.common.constants.Constants;
 import com.xiaomi.chen.rpc.common.constants.RpcException;
-import com.xiaomi.chen.rpc.registry.ServiceRegister;
+import com.xiaomi.chen.rpc.registry.NewServiceRegister;
+import com.xiaomi.chen.rpc.registry.base.NodePort;
 import com.xiaomi.chen.rpc.server.netty.ServerHandler;
 import com.xiaomi.chen.rpc.server.netty.ServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
@@ -41,7 +42,7 @@ public class RpcServerConfig implements ApplicationContextAware, InitializingBea
     private String registerAddress;
     private String serverAddress;
 
-    private ServiceRegister serviceRegistry;
+    private NewServiceRegister serviceRegistry;
 
     public RpcServerConfig(String registerAddress){
         this.registerAddress = registerAddress;
@@ -118,9 +119,9 @@ public class RpcServerConfig implements ApplicationContextAware, InitializingBea
         try {
             serverBootstrap.bind(host, port).sync().channel().closeFuture();
             log.info("server start on port:{}",port);
-            serviceRegistry =  new ServiceRegister(registerAddress);
+            serviceRegistry =  new NewServiceRegister(registerAddress);
             // 注册服务地址
-            serviceRegistry.register(serverAddress);
+            registerService(host, port);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -135,6 +136,14 @@ public class RpcServerConfig implements ApplicationContextAware, InitializingBea
             e.printStackTrace();
             log.error("",e);
             return null;
+        }
+    }
+
+    private void registerService(String ip, int port){
+
+        for(Map.Entry<String, Object> entry:handlerMap.entrySet()){
+            NodePort nodePort = new NodePort(entry.getKey(), ip, port);
+            serviceRegistry.register(nodePort);
         }
     }
 

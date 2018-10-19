@@ -10,7 +10,7 @@ import lombok.Data;
  * @description
  */
 @Data
-public class Port {
+public class NodePort {
 
     private String interfaceName;
 
@@ -18,4 +18,11 @@ public class Port {
 
     private int port;
 
+    public NodePort() {}
+
+    public NodePort(String interfaceName, String ip, int port) {
+        this.interfaceName = interfaceName;
+        this.ip = ip;
+        this.port = port;
+    }
 }

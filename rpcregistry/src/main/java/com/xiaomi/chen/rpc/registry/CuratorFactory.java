@@ -1,7 +1,7 @@
 package com.xiaomi.chen.rpc.registry;
 
 import com.xiaomi.chen.rpc.common.constants.Constants;
-import com.xiaomi.chen.rpc.registry.base.Port;
+import com.xiaomi.chen.rpc.registry.base.NodePort;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.RetryPolicy;
@@ -11,6 +11,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -47,7 +48,7 @@ public class CuratorFactory {
         try {
 
             RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-            CuratorFramework client = CuratorFrameworkFactory.newClient(registryAddress,Constants.ZK_SESSION_TIMEOUT, Constants.ZK_SESSION_TIMEOUT,retryPolicy);
+            CuratorFramework client = CuratorFrameworkFactory.newClient(registryAddress,Constants.ZK_SESSION_TIMEOUT, Constants.ZK_CONNECT_TIMEOUT,retryPolicy);
             client.start();
 
             connectMap.add(client);
@@ -81,8 +82,20 @@ public class CuratorFactory {
         client.delete().deletingChildrenIfNeeded().forPath(path);
     }
 
-    public String getNodePath(Port port) {
-        return Constants.ZK_REGISTRY_PATH + "/" + port.getInterfaceName() + "/node";
+    public String getNodePath(NodePort port) {
+        return Constants.ZK_REGISTRY_PATH + "/" + port.getInterfaceName() + "-"+port.getIp()+":"+port.getPort()+"-";
+    }
+
+    public void releaseConnection(){
+        Iterator<CuratorFramework> iterator = connectMap.iterator();
+        while (iterator.hasNext()) {
+            if (iterator.next() != null) {
+                if(iterator.next().isStarted()){
+                    iterator.next().close();
+                }
+            }
+
+        }
     }
 
 }

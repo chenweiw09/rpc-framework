@@ -76,9 +76,6 @@ public class RpcProxy {
                         throw new RuntimeException("response is null");
                     }
 
-                    if(response.getResult() == null){
-                        return "hh";
-                    }
                     // 返回 RPC 响应结果
                     return response.getResult();
                 }

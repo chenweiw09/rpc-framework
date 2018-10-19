@@ -1,7 +1,8 @@
 package com.xiaomi.chen.rpc;
 
-import com.xiaomi.chen.rpc.client.proxy.RpcProxy;
 import com.xiaomi.chen.rpc.service.IHello;
+import com.xiaomi.chen.rpc.service.IWorld;
+import com.xiaomi.chen.rpc.service.Person;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.BeansException;
@@ -27,12 +28,21 @@ public class SpringbootTestApplicationTests implements ApplicationContextAware{
 
 //		IHello iHello = rpcProxy.create(IHello.class);
 
-		IHello iHello = (IHello) applicationContext.getBean(IHello.class.getName());
+//		IHello iHello = (IHello) applicationContext.getBean(IHello.class.getName());
+//
+//		if(iHello != null){
+//			String str = iHello.sayHi("hello world",23);
+//			System.out.println(str);
+//		}
 
-		if(iHello != null){
-			String str = iHello.sayHi("hello world",23);
-			System.out.println(str);
-		}
+		IWorld iWorld = (IWorld) applicationContext.getBean(IWorld.class.getName());
+
+		iWorld.dd();
+		iWorld.hsay("ddd");
+		iWorld.say("dff",12);
+
+		Person p = new Person("xioaming",23);
+		iWorld.todo(p);
 
 	}
 

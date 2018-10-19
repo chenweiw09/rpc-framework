@@ -4,7 +4,6 @@ import com.xiaomi.chen.rpc.common.codec.RpcDecoder;
 import com.xiaomi.chen.rpc.common.codec.RpcEncoder;
 import com.xiaomi.chen.rpc.common.domain.RpcRequest;
 import com.xiaomi.chen.rpc.common.domain.RpcResponse;
-import com.xiaomi.chen.rpc.common.util.JsonSerializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -54,11 +53,10 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
             bootstrap.channel(NioSocketChannel.class);
             bootstrap.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
-                public void initChannel(SocketChannel socketChannel) throws Exception {
-                    ChannelPipeline pipeline = socketChannel.pipeline();
-                    pipeline.addLast(new LengthFieldBasedFrameDecoder(65535,0,4));
-                    pipeline.addLast(new RpcEncoder(RpcRequest.class, new JsonSerializer()));
-                    pipeline.addLast(new RpcDecoder(RpcResponse.class, new JsonSerializer()));
+                public void initChannel(SocketChannel channel) throws Exception {
+                    ChannelPipeline pipeline = channel.pipeline();
+                    pipeline.addLast(new RpcEncoder(RpcRequest.class));
+                    pipeline.addLast(new RpcDecoder(RpcResponse.class));
                     pipeline.addLast(RpcClient.this);
                 }
             });
@@ -76,3 +74,4 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
         }
     }
 }
+

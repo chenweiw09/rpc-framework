@@ -1,7 +1,9 @@
 package com.xiaomi.chen.rpc.server.netty;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xiaomi.chen.rpc.common.domain.RpcRequest;
 import com.xiaomi.chen.rpc.common.domain.RpcResponse;
+import com.xiaomi.chen.rpc.common.util.JSONUtil;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,6 +13,7 @@ import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -55,7 +58,22 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
         Class<?> serviceClz = serviceBean.getClass();
         FastClass fastClass = FastClass.create(serviceClz);
         FastMethod fastMethod = fastClass.getMethod(request.getMethodName(), request.getParameterTypes());
+
+        Class<?>[] types = request.getParameterTypes();
+        Object[] params = request.getParameters();
+
+        if(params != null && params.length >0){
+            LinkedHashMap map = (LinkedHashMap) params[0];
+
+            String str = JSONUtil.toJSONString(map);
+            System.out.println(str);
+            Object obj = JSONUtil.parseObject(str, types[0]);
+        }
+
+//        Object obj = mapper.readValue(params[0], types[0]);
+
         Object ret = fastMethod.invoke(serviceBean, request.getParameters());
+
         log.debug("service handler return:{}",ret);
         return ret;
     }
@@ -67,4 +85,26 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
             ctx.close();
         }
     }
+
+
+    // 在这里转一下请求参数
+    public Object[] revertParams(Class<?>[] parameterTypes, Object[] parameters){
+
+        Object[] ret = new Object[parameterTypes.length];
+
+        return null;
+
+    }
+
+    private boolean isPrimitive(Class<?> clazz){
+
+        if(clazz.isPrimitive()){
+            return true;
+        }
+
+        return false;
+
+    }
+
+
 }

@@ -8,7 +8,10 @@ package com.xiaomi.chen.rpc.common.constants;
  */
 public class Constants {
 
-    public static final int ZK_SESSION_TIMEOUT = Integer.MAX_VALUE;
+    public static final int ZK_SESSION_TIMEOUT = 100000;
+
+    public static final int ZK_CONNECT_TIMEOUT = 100000;
+
     public static final String ZK_REGISTRY_PATH = "/RPC_REGISTRY";
     public static final String ZK_DATA_PATH = ZK_REGISTRY_PATH + "/node";
 

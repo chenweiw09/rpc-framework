@@ -65,8 +65,8 @@ public class NettyClient implements Client {
                     protected void initChannel(SocketChannel socketChannel){
                         ChannelPipeline pipeline = socketChannel.pipeline();
                         pipeline.addLast(new LengthFieldBasedFrameDecoder(65535,0,4));
-                        pipeline.addLast(new RpcEncoder(RpcRequest.class, new JsonSerializer()));
-                        pipeline.addLast(new RpcDecoder(RpcResponse.class, new JsonSerializer()));
+                        pipeline.addLast(new RpcEncoder(RpcRequest.class));
+                        pipeline.addLast(new RpcDecoder(RpcResponse.class));
                         pipeline.addLast(clientHandler);
                     }
                 });

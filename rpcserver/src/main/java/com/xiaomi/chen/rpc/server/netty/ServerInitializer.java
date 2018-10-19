@@ -4,7 +4,6 @@ import com.xiaomi.chen.rpc.common.codec.RpcDecoder;
 import com.xiaomi.chen.rpc.common.codec.RpcEncoder;
 import com.xiaomi.chen.rpc.common.domain.RpcRequest;
 import com.xiaomi.chen.rpc.common.domain.RpcResponse;
-import com.xiaomi.chen.rpc.common.util.JsonSerializer;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -31,8 +30,8 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
         ChannelPipeline pipeline = socketChannel.pipeline();
 
         pipeline.addLast(new LengthFieldBasedFrameDecoder(65535,0,4));
-        pipeline.addLast(new RpcEncoder(RpcResponse.class,new JsonSerializer()));
-        pipeline.addLast(new RpcDecoder(RpcRequest.class,new JsonSerializer()));
+        pipeline.addLast(new RpcEncoder(RpcResponse.class));
+        pipeline.addLast(new RpcDecoder(RpcRequest.class));
         pipeline.addLast(serverHandler);
     }
 }

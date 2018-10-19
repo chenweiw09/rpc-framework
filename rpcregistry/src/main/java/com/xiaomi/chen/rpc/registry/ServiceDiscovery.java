@@ -7,6 +7,7 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,6 +22,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public class ServiceDiscovery extends RpcRegistryFactory {
     private Map<String, List<String>> conMap = new ConcurrentHashMap<>();
+
+    private Object lock = new Object();
 
     public ServiceDiscovery(String registryAddress) {
         super(registryAddress);
@@ -51,25 +54,34 @@ public class ServiceDiscovery extends RpcRegistryFactory {
                 }
             });
 
+            // 首先清空对应的map
+            conMap.clear();
             for(String interfaceName : intsList){
-                List<String> nodeList = zk.getChildren(Constants.ZK_REGISTRY_PATH+"/"+interfaceName, watchedEvent -> {
-                    if (watchedEvent.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
-                        watchNode(zk);
-                    }
-                });
-
-                List<String> ipList = new ArrayList<>();
-                for(String ip:nodeList){
-                    byte[] bytes = zk.getData(Constants.ZK_REGISTRY_PATH+"/"+interfaceName + "/" + ip, false, null);
-                    ipList.add(new String(bytes));
+                log.info("path=>{}", interfaceName);
+                String[] str = interfaceName.split("-");
+                if(str.length ==3){
+                    putPort(str[0], str[1]);
                 }
 
-                conMap.put(interfaceName, ipList);
             }
 
         } catch (KeeperException | InterruptedException e) {
             e.printStackTrace();
             log.error("",e);
         }
+    }
+
+    private void putPort(String face, String address) {
+        synchronized (lock) {
+            if (conMap.containsKey(face)) {
+                conMap.get(face).add(address);
+                Collections.shuffle(conMap.get(face));
+            } else {
+                conMap.put(face, new ArrayList<String>() {{
+                    add(address);
+                }});
+            }
+        }
+
     }
 }

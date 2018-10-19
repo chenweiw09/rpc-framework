@@ -2,7 +2,7 @@ package com.xiaomi.chen.rpc.registry;
 
 import com.xiaomi.chen.rpc.common.constants.Constants;
 import com.xiaomi.chen.rpc.common.util.JSONUtil;
-import com.xiaomi.chen.rpc.registry.base.Port;
+import com.xiaomi.chen.rpc.registry.base.NodePort;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -18,7 +18,7 @@ public class NewServiceRegister extends CuratorFactory {
         super(registryAddress);
     }
 
-    public void register(Port port){
+    public void register(NodePort port){
         if(port !=null){
             log.debug("register port:{}",port);
             try {

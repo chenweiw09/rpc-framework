@@ -1,5 +1,6 @@
 package com.xiaomi.chen.rpc.common.codec;
 
+import com.xiaomi.chen.rpc.common.util.JsonSerializer;
 import com.xiaomi.chen.rpc.common.util.Serialization;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -19,9 +20,9 @@ public class RpcDecoder extends ByteToMessageDecoder{
 
     private Serialization serialization;
 
-    public RpcDecoder(Class<?> clz, Serialization serialization) {
+    public RpcDecoder(Class<?> clz) {
         this.clz = clz;
-        this.serialization = serialization;
+        this.serialization = new JsonSerializer();
     }
 
     @Override

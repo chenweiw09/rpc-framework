@@ -2,7 +2,7 @@ package com.xiaomi.chen.rpc.registry;
 
 
 import com.xiaomi.chen.rpc.common.constants.Constants;
-import com.xiaomi.chen.rpc.registry.base.Port;
+import com.xiaomi.chen.rpc.registry.base.NodePort;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.*;
 
@@ -131,7 +131,7 @@ public abstract class RpcRegistryFactory {
         }
     }
 
-    public String getNodePath(Port port) {
+    public String getNodePath(NodePort port) {
         return Constants.ZK_REGISTRY_PATH + "/" + port.getInterfaceName() + "/node";
     }
 
