@@ -31,7 +31,7 @@ public abstract class RpcRegistryFactory {
         this.registryAddress = registryAddress;
     }
 
-    protected ZooKeeper getConnection() {
+    protected synchronized ZooKeeper getConnection() {
         if (connectMap.isEmpty()) {
             log.info("------------创建一次连接");
             connectServer();

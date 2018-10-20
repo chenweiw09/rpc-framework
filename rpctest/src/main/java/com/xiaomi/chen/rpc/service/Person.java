@@ -24,4 +24,12 @@ public class Person implements Serializable {
         this.name = name;
         this.age = age;
     }
+
+    @Override
+    public String toString() {
+        return "Person{----" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                '}';
+    }
 }

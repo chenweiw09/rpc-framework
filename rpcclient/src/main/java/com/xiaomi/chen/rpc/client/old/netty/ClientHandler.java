@@ -57,7 +57,7 @@ public class ClientHandler extends ChannelDuplexHandler{
 
         try {
             DefaultFuture defaultFuture = futureMap.get(requestId);
-            return defaultFuture.getResponse(1000);
+            return defaultFuture.getResponse(5000);
         }finally {
             futureMap.remove(requestId);
         }

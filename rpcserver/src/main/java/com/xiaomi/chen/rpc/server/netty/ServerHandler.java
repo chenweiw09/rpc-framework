@@ -38,6 +38,8 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
         RpcResponse response = new RpcResponse();
         response.setRequestId(request.getRequestId());
         try {
+
+            Object ll = null;
             Object handler = handler(request);
             response.setResult(handler);
             log.debug("---------channel read response:{}",response);
@@ -61,18 +63,14 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
         Class<?>[] types = request.getParameterTypes();
         Object[] params = request.getParameters();
-
+        Object[] pas = null;
         if(params != null && params.length >0){
-            LinkedHashMap map = (LinkedHashMap) params[0];
+            pas = revertParams(types, params);
+            System.out.println("-----"+JSONUtil.toJSONString(pas));
 
-            String str = JSONUtil.toJSONString(map);
-            System.out.println(str);
-            Object obj = JSONUtil.parseObject(str, types[0]);
         }
 
-//        Object obj = mapper.readValue(params[0], types[0]);
-
-        Object ret = fastMethod.invoke(serviceBean, request.getParameters());
+        Object ret = fastMethod.invoke(serviceBean, pas);
 
         log.debug("service handler return:{}",ret);
         return ret;
@@ -92,19 +90,17 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
         Object[] ret = new Object[parameterTypes.length];
 
-        return null;
+        for(int i=0; i<parameters.length;i++){
+            if(parameters[i] instanceof LinkedHashMap){
+                String str = JSONUtil.toJSONString(parameters[i]);
+                ret[i] = JSONUtil.parseObject(str, parameterTypes[i]);
+            }else{
+                ret[i] = parameters[i];
+            }
 
-    }
-
-    private boolean isPrimitive(Class<?> clazz){
-
-        if(clazz.isPrimitive()){
-            return true;
         }
-
-        return false;
+        return ret;
 
     }
-
 
 }
